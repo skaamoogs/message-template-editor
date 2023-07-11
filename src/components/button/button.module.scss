@@ -2,36 +2,31 @@
 @import "../../styles/variables.scss";
 
 .btn {
-  border: none;
   border-radius: 8px;
+  height: 40px;
   color: $white;
+  border: 1px solid;
   cursor: pointer;
   @include text-bold;
-  padding: 6px 12px;
+  padding: 8px 16px;
+  vertical-align: middle;
+  transition: background-color 0.2s ease-in-out,
+    border-color 0.2s;
 
   &_primary {
-    background-color: $primary;
-    border-color: $primary;
-
-    &:hover {
-      background-color: darken($primary, 10%);
-      border-color: $primary;
-    }
+    @include button-color($primary, 10%);
   }
 
   &_secondary {
-    background-color: $secondary;
-    border-color: $secondary;
+    @include button-color($secondary, 10%);
   }
 
   &_danger {
-    background-color: $danger;
-    border-color: $danger;
+    @include button-color($danger, 10%);
   }
 
   &_variable {
-    background-color: $light-green;
-    border-color: $light-green;
+    @include button-color($light-green, 10%);
     color: $black;
   }
 }

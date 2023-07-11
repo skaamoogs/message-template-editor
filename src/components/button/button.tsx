@@ -1,5 +1,5 @@
 import { PropsWithChildren } from "react";
-import style from "./button.module.scss";
+import styles from "./button.module.scss";
 import { classnames } from "../../utils/helpers";
 
 export const enum ButtonVariations {
@@ -11,6 +11,7 @@ export const enum ButtonVariations {
 
 interface IButtonProps {
   variation: ButtonVariations;
+  width?: string;
   onClick?: () => void;
 }
 
@@ -19,7 +20,7 @@ export const Button = (props: PropsWithChildren<IButtonProps>) => {
 
   return (
     <button
-      className={classnames(style.btn, style[`btn_${variation}`])}
+      className={classnames(styles.btn, styles[`btn_${variation}`])}
       onClick={onClick}
     >
       {children}

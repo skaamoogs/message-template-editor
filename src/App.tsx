@@ -1,11 +1,19 @@
 import { Button, ButtonVariations } from "./components/button/button";
+import { Textarea } from "./components/textarea/textarea";
 
 function App() {
   return (
     <>
-      <Button variation={ButtonVariations.Primary}>Save</Button>
+      <Textarea changeHandler={(valeu) => console.log("change value")} />
+      <Button variation={ButtonVariations.Primary}>
+        <img src="confirm.svg" alt="save icon" />
+        <span>Save</span>
+      </Button>
       <Button variation={ButtonVariations.Secondary}>Preview</Button>
-      <Button variation={ButtonVariations.Danger}>Close</Button>
+      <Button variation={ButtonVariations.Danger}>
+        <img src="close.svg" alt="close icon" />
+        <span>Close</span>
+      </Button>
       <Button variation={ButtonVariations.Variable}>&#123;company&#125;</Button>
     </>
   );

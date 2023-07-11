@@ -1,0 +1,12 @@
+@import "../../styles/mixin.scss";
+@import "../../styles/variables.scss";
+
+.textarea {
+  @include text-paragraph;
+  width: 100%;
+  resize: none;
+  padding: 12px;
+  box-sizing: border-box;
+  overflow: hidden;
+  border-radius: 8px;
+}

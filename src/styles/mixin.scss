@@ -24,3 +24,13 @@
   font-size: 16px;
   font-weight: 500;
 }
+
+@mixin button-color($color, $darken-amount) {
+  background-color: $color;
+  border-color: $color;
+
+  &:hover {
+    background-color: darken($color, $darken-amount);
+    border-color: darken($color, $darken-amount);
+  }
+}
