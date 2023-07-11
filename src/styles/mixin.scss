@@ -1,0 +1,26 @@
+@use "./variables.scss";
+
+//typography
+@mixin h1 {
+  font-family: $font-family-default;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+@mixin h2 {
+  font-family: $font-family-default;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+@mixin text-paragraph {
+  font-family: $font-family-default;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+@mixin text-bold {
+  font-family: $font-family-default;
+  font-size: 16px;
+  font-weight: 500;
+}

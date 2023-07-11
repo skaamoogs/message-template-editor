@@ -1,0 +1,37 @@
+@import "../../styles/mixin.scss";
+@import "../../styles/variables.scss";
+
+.btn {
+  border: none;
+  border-radius: 8px;
+  color: $white;
+  cursor: pointer;
+  @include text-bold;
+  padding: 6px 12px;
+
+  &_primary {
+    background-color: $primary;
+    border-color: $primary;
+
+    &:hover {
+      background-color: darken($primary, 10%);
+      border-color: $primary;
+    }
+  }
+
+  &_secondary {
+    background-color: $secondary;
+    border-color: $secondary;
+  }
+
+  &_danger {
+    background-color: $danger;
+    border-color: $danger;
+  }
+
+  &_variable {
+    background-color: $light-green;
+    border-color: $light-green;
+    color: $black;
+  }
+}
