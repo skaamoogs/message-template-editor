@@ -10,8 +10,8 @@
   @include text-bold;
   padding: 8px 16px;
   vertical-align: middle;
-  transition: background-color 0.2s ease-in-out,
-    border-color 0.2s;
+  transition: background-color 0.15s ease-in-out,
+    border-color 0.15s;
 
   &_primary {
     @include button-color($primary, 10%);
