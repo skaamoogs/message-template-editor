@@ -1,21 +1,29 @@
 import { Button, ButtonVariations } from "./components/button/button";
-import { Textarea } from "./components/textarea/textarea";
+import styles from "./app.module.scss";
+import { useState } from "react";
+import { TemplateEditor } from "./components/template-editor/template-editor";
 
 function App() {
+  const [show, setShow] = useState(false);
+
+  const showEditor = () => {
+    setShow(true);
+  };
+
+  const hideEditor = () => {
+    setShow(false);
+  };
+
+  if (show) {
+    return <TemplateEditor onHide={hideEditor} />;
+  }
+
   return (
-    <>
-      <Textarea changeHandler={(valeu) => console.log("change value")} />
-      <Button variation={ButtonVariations.Primary}>
-        <img src="confirm.svg" alt="save icon" />
-        <span>Save</span>
+    <main className={styles.main}>
+      <Button variation={ButtonVariations.Secondary} onClick={showEditor}>
+        Message Editor
       </Button>
-      <Button variation={ButtonVariations.Secondary}>Preview</Button>
-      <Button variation={ButtonVariations.Danger}>
-        <img src="close.svg" alt="close icon" />
-        <span>Close</span>
-      </Button>
-      <Button variation={ButtonVariations.Variable}>&#123;company&#125;</Button>
-    </>
+    </main>
   );
 }
 

@@ -5,16 +5,18 @@ import { classnames } from "../../utils/helpers";
 const DEFAUlT_MIN_HEIGHT = 32;
 
 interface ITextareaProps {
+  defaultText?: string;
   label?: string;
   minHeight?: number;
   changeHandler?: (value: string) => void;
+  className?: string;
 }
 
 export const Textarea = (props: ITextareaProps) => {
-  const { minHeight, label, changeHandler } = props;
+  const { defaultText, minHeight, label, className, changeHandler } = props;
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState(defaultText);
 
   const onChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     setValue(event.target.value);
@@ -35,7 +37,7 @@ export const Textarea = (props: ITextareaProps) => {
     <>
       {label && <label>{label}</label>}
       <textarea
-        className={styles.textarea}
+        className={classnames(styles.textarea, className ?? "")}
         value={value}
         ref={textareaRef}
         onChange={onChange}

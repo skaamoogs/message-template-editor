@@ -7,6 +7,7 @@ export const enum ButtonVariations {
   Secondary = "secondary",
   Danger = "danger",
   Variable = "variable",
+  Light = "light",
 }
 
 interface IButtonProps {

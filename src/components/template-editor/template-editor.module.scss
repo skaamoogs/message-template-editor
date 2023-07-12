@@ -1,0 +1,47 @@
+@import "../../styles/mixin.scss";
+@import "../../styles/variables.scss";
+
+.wrapper {
+  z-index: 1;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+}
+
+.container {
+  z-index: 10;
+  margin: 0 auto;
+  width: 95%;
+  padding: 20px 0;
+}
+
+.title {
+  @include h1;
+  text-align: center;
+  margin: 0 0 20px;
+}
+
+.controlArea {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.variables {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.template {
+  margin: 20px 0;
+}
+
+.buttons {
+  display: flex;
+  gap: 5%;
+  justify-content: center;
+}
