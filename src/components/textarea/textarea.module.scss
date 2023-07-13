@@ -1,13 +1,25 @@
 @import "../../styles/mixin.scss";
 @import "../../styles/variables.scss";
 
-.textarea {
+.container {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px 0;
+}
+
+.text {
   @include text-paragraph;
-  width: 100%;
+  width: calc(100% - 80px);
+  margin-left: auto;
   resize: none;
   padding: 12px;
   box-sizing: border-box;
   overflow: hidden;
   border-radius: 8px;
   border: 1px solid $light-gray;
+
+  &_full-width {
+    width: 100%;
+  }
 }
+

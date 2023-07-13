@@ -1,0 +1,20 @@
+.outer {
+  flex-grow: 1;
+}
+
+.root {
+  width: 100%;
+}
+
+.block {
+  display: flex;
+}
+
+.label {
+  flex-basis: 80px;
+  margin: 20px 0;
+}
+
+.fullWidth {
+  flex-grow: 1;
+}

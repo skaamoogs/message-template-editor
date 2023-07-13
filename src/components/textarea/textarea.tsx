@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import styles from "./textarea.module.scss";
 import { classnames } from "../../utils/helpers";
 
@@ -8,19 +8,31 @@ interface ITextareaProps {
   defaultText?: string;
   label?: string;
   minHeight?: number;
-  changeHandler?: (value: string) => void;
+  changeHandler?: (event: any) => void;
+  focusHandler?: (event: any) => void;
   className?: string;
 }
 
 export const Textarea = (props: ITextareaProps) => {
-  const { defaultText, minHeight, label, className, changeHandler } = props;
+  const {
+    defaultText,
+    minHeight,
+    label,
+    className,
+    changeHandler,
+    focusHandler,
+  } = props;
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const [value, setValue] = useState(defaultText);
 
   const onChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     setValue(event.target.value);
-    changeHandler && changeHandler(event.target.value);
+    changeHandler && changeHandler(event);
+  };
+
+  const moveCaret = (event: any) => {
+    changeHandler && changeHandler(event);
   };
 
   useEffect(() => {
@@ -33,15 +45,25 @@ export const Textarea = (props: ITextareaProps) => {
     }
   }, [value, minHeight]);
 
+  const textClassName = useCallback(() => {
+    if (label) {
+      return styles.text;
+    }
+    return classnames(styles.text, styles[`text_full-width`]);
+  }, [label]);
+
   return (
-    <>
+    <div className={classnames(styles.container, className ?? "")}>
       {label && <label>{label}</label>}
       <textarea
-        className={classnames(styles.textarea, className ?? "")}
+        className={textClassName()}
         value={value}
         ref={textareaRef}
         onChange={onChange}
+        onKeyDown={moveCaret}
+        onClick={moveCaret}
+        onFocus={focusHandler}
       />
-    </>
+    </div>
   );
 };
