@@ -39,7 +39,6 @@ export const Template = (props: ITemplateProps) => {
       />
     );
   }
-  const { first, second, condition } = node.children;
 
   return (
     <div className={styles.container}>

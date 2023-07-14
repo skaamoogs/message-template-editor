@@ -9,21 +9,24 @@ interface ITemplateEditorProps {
   onHide: () => void;
 }
 
-export interface ITextNode {
+type NodeProps = {
+  type: NodeType;
   id: number;
-  text: { value: string; caretPosition: number };
+  text?: string;
   label?: string;
-  children: {
-    first: ITextNode;
-    condition: IConditionBlock;
-    second: ITextNode;
-  } | null;
+  parent: ITextNode | null;
+};
+
+export interface ITextNode extends Omit<NodeProps, "text"> {
+  text: { value: string; caretPosition: number };
+  children: Array<ITextNode> | null;
 }
 
-interface IConditionBlock {
-  ifBlock: ITextNode;
-  thenBlock: ITextNode;
-  elseBlock: ITextNode;
+const enum NodeType {
+  text = "text",
+  if = "IF",
+  then = "THEN",
+  else = "ELSE",
 }
 
 const defaultVarNames = ["firstname", "lastname", "company", "position"];
@@ -31,48 +34,81 @@ const arrVarNames: string[] =
   storageService.get("arrVarNames") ?? defaultVarNames;
 const template: string | null = storageService.get("template");
 
-const createNode = (id?: number, text?: string, label?: string) => ({
-  id: id ?? 0,
-  label,
-  text: { value: text ?? "", caretPosition: 0 },
+const createNode = (props: NodeProps) => ({
+  id: props.id ?? 0,
+  type: props.type,
+  label: props.label,
+  text: { value: props.text ?? "", caretPosition: 0 },
+  parent: props.parent,
   children: null,
 });
 
-const textTree = createNode(0, template ?? "");
+const textTree = createNode({
+  type: NodeType.text,
+  id: 0,
+  text: template ?? "",
+  parent: null,
+});
 
 const findNode = (id: number, tree: ITextNode): ITextNode | undefined => {
   if (id === tree.id) return tree;
   if (!tree.children) return;
 
-  let node = findNode(id, tree.children.first);
-  if (node) return node;
-  node = findNode(id, tree.children.condition.thenBlock);
-  if (node) return node;
-  node = findNode(id, tree.children.condition.elseBlock);
-  if (node) return node;
-  node = findNode(id, tree.children.second);
-  if (node) return node;
+  tree.children.forEach((child) => {
+    const node = findNode(id, child);
+    if (node) return node;
+  });
 };
 
 const addNewNode = (id: number, countNode: number) => {
   const node = findNode(id, textTree);
   if (node) {
-    node.children = {
-      first: createNode(
-        ++countNode,
-        node.text.value.slice(0, node.text.caretPosition),
-        node.label
-      ),
-      condition: {
-        ifBlock: createNode(++countNode, "", "IF"),
-        thenBlock: createNode(++countNode, "", "THEN"),
-        elseBlock: createNode(++countNode, "", "ELSE"),
-      },
-      second: createNode(
-        ++countNode,
-        node.text.value.slice(node.text.caretPosition)
-      ),
-    };
+    const block = [
+      createNode({
+        type: NodeType.text,
+        id: ++countNode,
+        text: node.text.value.slice(0, node.text.caretPosition),
+        label: node.label,
+        parent: node,
+      }),
+      createNode({
+        type: NodeType.if,
+        id: ++countNode,
+        label: "IF",
+        parent: node,
+      }),
+      createNode({
+        type: NodeType.then,
+        id: ++countNode,
+        label: "THEN",
+        parent: node,
+      }),
+      createNode({
+        type: NodeType.else,
+        id: ++countNode,
+        label: "ELSE",
+        parent: node,
+      }),
+      createNode({
+        type: NodeType.text,
+        id: ++countNode,
+        text: node.text.value.slice(node.text.caretPosition),
+        label: node.label,
+        parent: node,
+      }),
+    ];
+    if (node.type === NodeType.text && node.parent?.children) {
+      const nodeIndex = node.parent.children.findIndex(
+        (child) => child.id === node.id
+      );
+      node.parent.children = [
+        ...node.parent.children.slice(0, nodeIndex),
+        ...block,
+        ...node.parent.children.slice(nodeIndex + 1),
+      ];
+    } else {
+      node.children = block;
+    }
   }
   return countNode;
 };
