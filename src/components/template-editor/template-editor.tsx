@@ -3,6 +3,7 @@ import { storageService } from "../../service/storage";
 import { Button, ButtonVariations } from "../button/button";
 import styles from "./template-editor.module.scss";
 import { Template } from "../template/template";
+import { useForceUpdate } from "../../hooks/forceUpdate";
 
 interface ITemplateEditorProps {
   onHide: () => void;
@@ -55,21 +56,20 @@ const findNode = (id: number, tree: ITextNode): ITextNode | undefined => {
 
 const addNewNode = (id: number, countNode: number) => {
   const node = findNode(id, textTree);
-  console.log(node, textTree);
   if (node) {
     node.children = {
       first: createNode(
-        countNode++,
+        ++countNode,
         node.text.value.slice(0, node.text.caretPosition),
         node.label
       ),
       condition: {
-        ifBlock: createNode(countNode++, "", "IF"),
-        thenBlock: createNode(countNode++, "", "THEN"),
-        elseBlock: createNode(countNode++, "", "ELSE"),
+        ifBlock: createNode(++countNode, "", "IF"),
+        thenBlock: createNode(++countNode, "", "THEN"),
+        elseBlock: createNode(++countNode, "", "ELSE"),
       },
       second: createNode(
-        countNode++,
+        ++countNode,
         node.text.value.slice(node.text.caretPosition)
       ),
     };
@@ -80,11 +80,26 @@ const addNewNode = (id: number, countNode: number) => {
 export const TemplateEditor = (props: ITemplateEditorProps) => {
   const { onHide } = props;
 
-  const [activeNodeId, setActiveNodeId] = useState<number>(0);
+  const [activeNode, setActiveNode] = useState<ITextNode>(textTree);
   const [countNode, setCountNode] = useState(0);
+  const forceUpdate = useForceUpdate();
 
   const divideBlock = () => {
-    setCountNode(addNewNode(activeNodeId, countNode));
+    console.log(activeNode?.id);
+    setCountNode(addNewNode(activeNode.id, countNode));
+  };
+
+  const addVariable = (varName: string) => {
+    const node = findNode(activeNode.id, textTree);
+    if (node) {
+      const { value, caretPosition } = node.text;
+      node.text.value = `${value.slice(
+        0,
+        caretPosition
+      )}{${varName}}${value.slice(caretPosition)}`;
+      console.log(textTree);
+      forceUpdate();
+    }
   };
 
   return (
@@ -94,20 +109,31 @@ export const TemplateEditor = (props: ITemplateEditorProps) => {
         <div className={styles.controlArea}>
           <div className={styles.variables}>
             {arrVarNames.map((name) => (
-              <Button variation={ButtonVariations.Variable} key={name}>
+              <Button
+                variation={ButtonVariations.Variable}
+                key={name}
+                onClick={() => addVariable(name)}
+              >
                 &#123;{name}&#125;
               </Button>
             ))}
           </div>
+          <Button
+            variation={ButtonVariations.Light}
+            onClick={() => console.log(textTree)}
+          >
+            Show Tree
+          </Button>
           <Button variation={ButtonVariations.Light} onClick={divideBlock}>
             IF-THEN-ELSE
           </Button>
         </div>
-        <Template
-          node={textTree}
-          focusHandler={(id) => setActiveNodeId(id)}
-          root
-        />
+        <div className={styles.template}>
+          <Template
+            node={textTree}
+            getActiveNode={(node) => setActiveNode(node)}
+          />
+        </div>
         <div className={styles.buttons}>
           <Button
             variation={ButtonVariations.Secondary}

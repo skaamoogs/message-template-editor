@@ -1,9 +1,8 @@
-.outer {
-  flex-grow: 1;
-}
+@import "../../styles/variables.scss";
+@import "../../styles/mixin.scss";
 
-.root {
-  width: 100%;
+.container {
+  flex-grow: 1;
 }
 
 .block {
@@ -11,8 +10,28 @@
 }
 
 .label {
-  flex-basis: 80px;
-  margin: 20px 0;
+  margin: 0;
+  border-radius: 6px;
+  background-color: $green;
+  padding-inline: 10px;
+  color: $white;
+  @include text-paragraph;
+}
+
+.labelContainer {
+  display: flex;
+  align-items: start;
+  gap: 20px;
+  flex-basis: 120px;
+}
+
+.deleteButton {
+  border-radius: 12px;
+  height: fit-content;
+  @include text-small;
+  cursor: pointer;
+  border: 1px solid $light-gray;
+  @include button-color($light-gray, 10%);
 }
 
 .fullWidth {

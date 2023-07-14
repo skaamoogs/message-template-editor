@@ -1,16 +1,27 @@
-import { classnames } from "../../utils/helpers";
+import { useForceUpdate } from "../../hooks/forceUpdate";
 import { ITextNode } from "../template-editor/template-editor";
 import { Textarea } from "../textarea/textarea";
 import styles from "./template.module.scss";
 
 interface ITemplateProps {
   node: ITextNode;
-  focusHandler: (id: number) => void;
+  getActiveNode: (node: ITextNode) => void;
   root?: boolean;
 }
 
 export const Template = (props: ITemplateProps) => {
-  const { node, focusHandler, root } = props;
+  const { node, getActiveNode } = props;
+  const forceUpdate = useForceUpdate();
+
+  const deleteBlock = () => {
+    node.text.value =
+      node.children?.first.text.value.concat(
+        node.children?.second.text.value
+      ) ?? "";
+    node.children = null;
+    getActiveNode(node);
+    forceUpdate();
+  };
 
   if (!node.children) {
     return (
@@ -21,8 +32,8 @@ export const Template = (props: ITemplateProps) => {
           node.text.caretPosition = event.target.selectionStart;
         }}
         focusHandler={() => {
-          focusHandler(node.id);
-          console.log(node.id);
+          getActiveNode(node);
+          console.log(node);
         }}
         className={styles.fullWidth}
       />
@@ -31,26 +42,42 @@ export const Template = (props: ITemplateProps) => {
   const { first, second, condition } = node.children;
 
   return (
-    <div className={styles.outer}>
-      <Template node={first} focusHandler={focusHandler} />
+    <div className={styles.container}>
+      <Template node={first} getActiveNode={getActiveNode} />
       <div>
-        <Textarea
-          defaultText={condition.ifBlock.text.value}
-          changeHandler={(event) => {
-            condition.ifBlock.text.value = event.target.value;
-          }}
-          label={condition.ifBlock.label}
-        />
         <div className={styles.block}>
-          <p className={styles.label}>{condition.thenBlock.label}</p>
-          <Template node={condition.thenBlock} focusHandler={focusHandler} />
+          <div className={styles.labelContainer}>
+            <p className={styles.label}>{condition.ifBlock.label}</p>
+            <button className={styles.deleteButton} onClick={deleteBlock}>
+              Delete
+            </button>
+          </div>
+          <Textarea
+            defaultText={condition.ifBlock.text.value}
+            changeHandler={(event) => {
+              condition.ifBlock.text.value = event.target.value;
+            }}
+            focusHandler={() => {
+              getActiveNode(condition.ifBlock);
+              console.log(condition.ifBlock);
+            }}
+            className={styles.fullWidth}
+          />
         </div>
         <div className={styles.block}>
-          <p className={styles.label}>{condition.elseBlock.label}</p>
-          <Template node={condition.elseBlock} focusHandler={focusHandler} />
+          <div className={styles.labelContainer}>
+            <p className={styles.label}>{condition.thenBlock.label}</p>
+          </div>
+          <Template node={condition.thenBlock} getActiveNode={getActiveNode} />
+        </div>
+        <div className={styles.block}>
+          <div className={styles.labelContainer}>
+            <p className={styles.label}>{condition.elseBlock.label}</p>
+          </div>
+          <Template node={condition.elseBlock} getActiveNode={getActiveNode} />
         </div>
       </div>
-      <Template node={second} focusHandler={focusHandler} />
+      <Template node={second} getActiveNode={getActiveNode} />
     </div>
   );
 };

@@ -4,12 +4,12 @@
 .container {
   display: flex;
   justify-content: space-between;
-  margin: 20px 0;
+  margin-bottom: 20px;
 }
 
 .text {
   @include text-paragraph;
-  width: calc(100% - 80px);
+  width: 100%;
   margin-left: auto;
   resize: none;
   padding: 12px;
@@ -17,9 +17,4 @@
   overflow: hidden;
   border-radius: 8px;
   border: 1px solid $light-gray;
-
-  &_full-width {
-    width: 100%;
-  }
 }
-

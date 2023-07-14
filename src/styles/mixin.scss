@@ -25,6 +25,12 @@
   font-weight: 500;
 }
 
+@mixin text-small {
+  font-family: $font-family-default;
+  font-size: 14px;
+  font-weight: 400;
+}
+
 @mixin button-color($color, $darken-amount) {
   background-color: $color;
   border-color: $color;

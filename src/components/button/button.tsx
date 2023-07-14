@@ -13,15 +13,16 @@ export const enum ButtonVariations {
 interface IButtonProps {
   variation: ButtonVariations;
   width?: string;
+  className?: string;
   onClick?: () => void;
 }
 
 export const Button = (props: PropsWithChildren<IButtonProps>) => {
-  const { children, variation, onClick } = props;
+  const { children, variation, className, onClick } = props;
 
   return (
     <button
-      className={classnames(styles.btn, styles[`btn_${variation}`])}
+      className={classnames(styles.btn, styles[`btn_${variation}`], className ?? "")}
       onClick={onClick}
     >
       {children}

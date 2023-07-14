@@ -26,6 +26,8 @@ export const Textarea = (props: ITextareaProps) => {
 
   const [value, setValue] = useState(defaultText);
 
+  useEffect(() => setValue(defaultText), [defaultText]);
+
   const onChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     setValue(event.target.value);
     changeHandler && changeHandler(event);
@@ -45,18 +47,11 @@ export const Textarea = (props: ITextareaProps) => {
     }
   }, [value, minHeight]);
 
-  const textClassName = useCallback(() => {
-    if (label) {
-      return styles.text;
-    }
-    return classnames(styles.text, styles[`text_full-width`]);
-  }, [label]);
-
   return (
     <div className={classnames(styles.container, className ?? "")}>
       {label && <label>{label}</label>}
       <textarea
-        className={textClassName()}
+        className={styles.text}
         value={value}
         ref={textareaRef}
         onChange={onChange}
