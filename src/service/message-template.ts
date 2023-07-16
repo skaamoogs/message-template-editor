@@ -13,6 +13,11 @@ export interface ITextNode extends Omit<NodeProps, "text"> {
   children: Array<ITextNode> | null;
 }
 
+export interface ITemplate {
+  tree: ITextNode;
+  countNode: number;
+}
+
 export const enum NodeType {
   text = "text",
   if = "IF",
@@ -22,17 +27,19 @@ export const enum NodeType {
 
 export class MessageTemplate {
   protected _tree: ITextNode;
-  protected countNode: number;
+  protected _countNode: number;
   protected _varNames: string[];
 
-  constructor(varNames: string[]) {
-    this._tree = this.createNode({
-      type: NodeType.text,
-      id: 0,
-      text: "",
-      parent: null,
-    });
-    this.countNode = 0;
+  constructor(template: ITemplate | null, varNames: string[]) {
+    this._tree =
+      template?.tree ??
+      this.createNode({
+        type: NodeType.text,
+        id: 0,
+        text: "",
+        parent: null,
+      });
+    this._countNode = template?.countNode ?? 0;
     this._varNames = varNames;
   }
 
@@ -68,32 +75,32 @@ export class MessageTemplate {
       const block = [
         this.createNode({
           type: NodeType.text,
-          id: ++this.countNode,
+          id: ++this._countNode,
           text: node.text.value.slice(0, node.text.caretPosition),
           label: node.label,
           parent: node.parent,
         }),
         this.createNode({
           type: NodeType.if,
-          id: ++this.countNode,
+          id: ++this._countNode,
           label: NodeType.if,
           parent: node.parent,
         }),
         this.createNode({
           type: NodeType.then,
-          id: ++this.countNode,
+          id: ++this._countNode,
           label: NodeType.then,
           parent: node.parent,
         }),
         this.createNode({
           type: NodeType.else,
-          id: ++this.countNode,
+          id: ++this._countNode,
           label: NodeType.else,
           parent: node.parent,
         }),
         this.createNode({
           type: NodeType.text,
-          id: ++this.countNode,
+          id: ++this._countNode,
           text: node.text.value.slice(node.text.caretPosition),
           label: node.label,
           parent: node.parent,
@@ -135,11 +142,23 @@ export class MessageTemplate {
   get varNames() {
     return this._varNames;
   }
+
+  get countNode() {
+    return this._countNode;
+  }
 }
 
 const defaultVarNames = ["firstname", "lastname", "company", "position"];
 const arrVarNames: string[] =
   storageService.get("arrVarNames") ?? defaultVarNames;
-const template: MessageTemplate | null = storageService.get("template");
+const template: ITemplate | null = storageService.get("template");
 
-export const messageTemplate = template ?? new MessageTemplate(arrVarNames);
+export const callbackSave = () => {
+  const newTemplate: ITemplate = {
+    tree: messageTemplate.tree,
+    countNode: messageTemplate.countNode,
+  };
+  storageService.set("template", newTemplate);
+};
+
+export const messageTemplate = new MessageTemplate(template, arrVarNames);

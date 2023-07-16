@@ -26,7 +26,7 @@ export const compileTemplate = (
     return parsedText;
   };
 
-  const getTextFromNode = (node: ITextNode) => {
+  /*   const getTextFromNode = (node: ITextNode) => {
     if (!node.children) {
       const parsedText = parseText(node.text.value);
       if (node.type === NodeType.text) {
@@ -38,9 +38,23 @@ export const compileTemplate = (
             (child) => child.id === node?.id
           );
           if (parsedText) {
-            message += parseText(children[nodeIndex + 1].text.value);
+            const thenChidlren = children[nodeIndex + 1].children;
+            if (thenChidlren) {
+              thenChidlren.forEach((child) => {
+                getTextFromNode(child);
+              });
+            } else {
+              message += parseText(children[nodeIndex + 1].text.value);
+            }
           } else {
-            message += parseText(children[nodeIndex + 2].text.value);
+            const elseChidlren = children[nodeIndex + 2].children;
+            if (elseChidlren) {
+              elseChidlren.forEach((child) => {
+                getTextFromNode(child);
+              });
+            } else {
+              message += parseText(children[nodeIndex + 2].text.value);
+            }
           }
         }
       }
@@ -52,5 +66,33 @@ export const compileTemplate = (
   };
 
   getTextFromNode(template.tree);
+  return message; */
+  const stack: Array<ITextNode> = [template.tree];
+  while (stack.length) {
+    const node = stack.pop();
+    if (node) {
+      if (!node.children) {
+        const parsedText = parseText(node.text.value);
+        switch (node.type) {
+          case NodeType.text:
+          case NodeType.else:
+          case NodeType.then:
+            message += parsedText;
+            break;
+          case NodeType.if:
+            const thenNode = stack.pop();
+            const elseNode = stack.pop();
+            if (parsedText) {
+              thenNode && stack.push(thenNode);
+            } else {
+              elseNode && stack.push(elseNode);
+            }
+            break;
+        }
+      } else {
+        stack.push(...node.children.slice().reverse());
+      }
+    }
+  }
   return message;
 };

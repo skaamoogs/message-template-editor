@@ -3,4 +3,23 @@
 
 .container {
   border: 1px solid $light-gray;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  padding: 5px;
+  height: fit-content;
+}
+
+.label {
+  @include text-small;
+  color: $light-gray;
+}
+
+.input {
+  @include text-paragraph;
+  color: $black;
+  border: none;
+  padding: 5px 0 0 10px;
+  width: 100%;
+  box-sizing: border-box;
 }

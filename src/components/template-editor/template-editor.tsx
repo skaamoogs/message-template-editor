@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, ButtonVariations } from "../button/button";
 import styles from "./template-editor.module.scss";
 import { Template } from "../template/template";
 import { useForceUpdate } from "../../hooks/useForceUpdate";
-import { messageTemplate } from "../../service/message-template";
+import { callbackSave, messageTemplate } from "../../service/message-template";
 import { MessagePreview } from "../template-preview/message-preview";
 
 interface ITemplateEditorProps {
@@ -33,8 +33,13 @@ export const TemplateEditor = (props: ITemplateEditorProps) => {
         caretPosition
       )}{${varName}}${value.slice(caretPosition)}`;
       forceUpdate();
+      node.text.caretPosition += varName.length + 2;
     }
   };
+
+  useEffect(() => {
+    document.body.style.overflowY = showPreview ? "hidden" : "visible";
+  }, [showPreview]);
 
   const showMessagePreview = () => {
     setShowPreview(true);
@@ -84,7 +89,7 @@ export const TemplateEditor = (props: ITemplateEditorProps) => {
             >
               Preview
             </Button>
-            <Button variation={ButtonVariations.Primary}>Save</Button>
+            <Button variation={ButtonVariations.Primary} onClick={callbackSave}>Save</Button>
             <Button variation={ButtonVariations.Danger} onClick={onHide}>
               Close
             </Button>
