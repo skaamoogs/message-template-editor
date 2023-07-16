@@ -1,11 +1,11 @@
-import { useForceUpdate } from "../../hooks/forceUpdate";
-import { ITextNode } from "../template-editor/template-editor";
+import { useForceUpdate } from "../../hooks/useForceUpdate";
+import { ITextNode, NodeType, messageTemplate } from "../../service/message-template";
 import { Textarea } from "../textarea/textarea";
 import styles from "./template.module.scss";
 
 interface ITemplateProps {
   node: ITextNode;
-  getActiveNode: (node: ITextNode) => void;
+  getActiveNode: (id: number) => void;
   root?: boolean;
 }
 
@@ -13,13 +13,9 @@ export const Template = (props: ITemplateProps) => {
   const { node, getActiveNode } = props;
   const forceUpdate = useForceUpdate();
 
-  const deleteBlock = () => {
-    node.text.value =
-      node.children?.first.text.value.concat(
-        node.children?.second.text.value
-      ) ?? "";
-    node.children = null;
-    getActiveNode(node);
+  const deleteBlock = (id: number) => {
+    const activeNodeId = messageTemplate.deleteConditionBlock(id) ?? 0;
+    getActiveNode(activeNodeId);
     forceUpdate();
   };
 
@@ -32,8 +28,7 @@ export const Template = (props: ITemplateProps) => {
           node.text.caretPosition = event.target.selectionStart;
         }}
         focusHandler={() => {
-          getActiveNode(node);
-          console.log(node);
+          getActiveNode(node.id);
         }}
         className={styles.fullWidth}
       />
@@ -42,41 +37,54 @@ export const Template = (props: ITemplateProps) => {
 
   return (
     <div className={styles.container}>
-      <Template node={first} getActiveNode={getActiveNode} />
-      <div>
-        <div className={styles.block}>
-          <div className={styles.labelContainer}>
-            <p className={styles.label}>{condition.ifBlock.label}</p>
-            <button className={styles.deleteButton} onClick={deleteBlock}>
-              Delete
-            </button>
-          </div>
-          <Textarea
-            defaultText={condition.ifBlock.text.value}
-            changeHandler={(event) => {
-              condition.ifBlock.text.value = event.target.value;
-            }}
-            focusHandler={() => {
-              getActiveNode(condition.ifBlock);
-              console.log(condition.ifBlock);
-            }}
-            className={styles.fullWidth}
-          />
-        </div>
-        <div className={styles.block}>
-          <div className={styles.labelContainer}>
-            <p className={styles.label}>{condition.thenBlock.label}</p>
-          </div>
-          <Template node={condition.thenBlock} getActiveNode={getActiveNode} />
-        </div>
-        <div className={styles.block}>
-          <div className={styles.labelContainer}>
-            <p className={styles.label}>{condition.elseBlock.label}</p>
-          </div>
-          <Template node={condition.elseBlock} getActiveNode={getActiveNode} />
-        </div>
-      </div>
-      <Template node={second} getActiveNode={getActiveNode} />
+      {node.children.map((child) => {
+        switch (child.type) {
+          case NodeType.text:
+            return (
+              <Template
+                node={child}
+                getActiveNode={getActiveNode}
+                key={child.id}
+              />
+            );
+          case NodeType.if:
+            return (
+              <div className={styles.block} key={child.id}>
+                <div className={styles.labelContainer}>
+                  <p className={styles.label}>{child.label}</p>
+                  <button
+                    className={styles.deleteButton}
+                    onClick={() => deleteBlock(child.id)}
+                  >
+                    Delete
+                  </button>
+                </div>
+                <Textarea
+                  defaultText={child.text.value}
+                  changeHandler={(event) => {
+                    child.text.value = event.target.value;
+                    child.text.caretPosition = event.target.selectionStart;
+                  }}
+                  focusHandler={() => {
+                    getActiveNode(child.id);
+                  }}
+                  className={styles.fullWidth}
+                />
+              </div>
+            );
+          case NodeType.then:
+          case NodeType.else:
+            return (
+              <div className={styles.block} key={child.id}>
+                <div className={styles.labelContainer}>
+                  <p className={styles.label}>{child.label}</p>
+                </div>
+                <Template node={child} getActiveNode={getActiveNode} />
+              </div>
+            );
+        }
+        return <></>;
+      })}
     </div>
   );
 };

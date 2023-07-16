@@ -1,0 +1,35 @@
+@import "../../styles/mixin.scss";
+@import "../../styles/variables.scss";
+
+
+.wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 10;
+}
+
+.container {
+  width: 50%;
+  position: relative;
+  z-index: 20;
+  background-color: $white;
+  border-radius: 8px;
+}
+
+.closeButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.title {
+  @include h1;
+  text-align: center;
+}
