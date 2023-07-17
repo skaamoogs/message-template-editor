@@ -13,6 +13,7 @@
 .label {
   @include text-small;
   color: $light-gray;
+  text-align: left;
 }
 
 .input {

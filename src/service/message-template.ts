@@ -19,7 +19,7 @@ export interface ITemplate {
 }
 
 export const enum NodeType {
-  text = "text",
+  text = "TEXT",
   if = "IF",
   then = "THEN",
   else = "ELSE",
@@ -43,6 +43,7 @@ export class MessageTemplate {
     this._varNames = varNames;
   }
 
+  // cteate node object
   protected createNode(props: NodeProps) {
     return {
       id: props.id,
@@ -54,6 +55,7 @@ export class MessageTemplate {
     };
   }
 
+  // find node in tree by id
   findNode(id: number): ITextNode | undefined {
     const find = (id: number, node: ITextNode) => {
       if (id === node.id) return node;
@@ -69,9 +71,11 @@ export class MessageTemplate {
     return find(id, this._tree);
   }
 
+  /* Add new node by id. */
   addNewNode(id: number) {
     const node = this.findNode(id);
     if (node) {
+      // create new block with two text blocks and IF-THEN-ELSE block between them
       const block = [
         this.createNode({
           type: NodeType.text,
@@ -106,6 +110,8 @@ export class MessageTemplate {
           parentId: node.parentId,
         }),
       ];
+
+      /* If node type is text (not condition block) it adds new condition block to node siblings array */
       if (node.type === NodeType.text && node.parentId) {
         const parent = this.findNode(node.parentId);
         if (parent?.children) {
@@ -119,6 +125,7 @@ export class MessageTemplate {
           ];
         }
       } else {
+        // if node type is THEN or ELSE it create chidlren array in node
         block.forEach((el) => {
           el.parentId = node.id;
         });
@@ -127,16 +134,22 @@ export class MessageTemplate {
     }
   }
 
+  // delete IF-THEN-ELSE condition block and returns id of node coming before block
   deleteConditionBlock(id: number) {
     const block = this.findNode(id);
-    if (block && block.parentId) {
-      const parent = this.findNode(block.parentId);
+    if (block && block.parentId !== null) {
+      let parent = this.findNode(block.parentId);
       let children = parent?.children;
       if (children) {
         const nodeIndex = children.findIndex((child) => child.id === block?.id);
         children[nodeIndex - 1].text.value +=
           children[nodeIndex + 3].text.value;
         children.splice(nodeIndex, 4);
+        if (children.length === 1) {
+          parent!.text.value = children[nodeIndex - 1].text.value;
+          parent!.children = null;
+          return parent!.id;
+        }
         return children[nodeIndex - 1].id;
       }
     }

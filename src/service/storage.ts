@@ -18,6 +18,7 @@ class StorageService {
     localStorage.removeItem(key);
   }
 
+  // create wrapper object for item with item value and it's type
   protected createItemWrap(item: any) {
     const itemType = typeof item;
     const itemString = itemType === "object" ? JSON.stringify(item) : item;

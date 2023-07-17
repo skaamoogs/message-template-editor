@@ -1,5 +1,9 @@
 import { useForceUpdate } from "../../hooks/useForceUpdate";
-import { ITextNode, NodeType, messageTemplate } from "../../service/message-template";
+import {
+  ITextNode,
+  NodeType,
+  messageTemplate,
+} from "../../service/message-template";
 import { Textarea } from "../textarea/textarea";
 import styles from "./template.module.scss";
 

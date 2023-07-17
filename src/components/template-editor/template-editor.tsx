@@ -36,11 +36,13 @@ export const TemplateEditor = (props: ITemplateEditorProps) => {
         0,
         caretPosition
       )}{${varName}}${value.slice(caretPosition)}`;
-      forceUpdate();
       node.text.caretPosition += varName.length + 2;
+
+      forceUpdate();
     }
   };
 
+  // disable scrolling if preview window is open
   useEffect(() => {
     document.body.style.overflowY = showPreview ? "hidden" : "visible";
   }, [showPreview]);
