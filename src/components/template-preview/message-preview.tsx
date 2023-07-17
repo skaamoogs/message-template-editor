@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
-import { messageTemplate } from "../../service/message-template";
+import { useContext, useEffect, useState } from "react";
 import { compileTemplate } from "../../utils/compile-template";
 import styles from "./message-preview.module.scss";
 import { Input } from "../input/input";
 import { Button, ButtonVariations } from "../button/button";
+import { MessageTemplateContext } from "../../app";
 
 interface IMessagePreviewProps {
   onHide: () => void;
@@ -13,10 +13,11 @@ export const MessagePreview = (props: IMessagePreviewProps) => {
   const { onHide } = props;
   const [message, setMessage] = useState("");
   const [variables, setVariables] = useState<Record<string, string>>({});
+  const messageTemplate = useContext(MessageTemplateContext);
 
   useEffect(() => {
     setMessage(compileTemplate(messageTemplate, variables));
-  }, [variables]);
+  }, [variables, messageTemplate]);
 
   const changeVariables = (name: string, value: string) => {
     setVariables((prevState) => ({ ...prevState, [name]: value }));

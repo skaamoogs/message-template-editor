@@ -168,17 +168,21 @@ export class MessageTemplate {
   }
 }
 
-const defaultVarNames = ["firstname", "lastname", "company", "position"];
-const arrVarNames: string[] =
-  storageService.get("arrVarNames") ?? defaultVarNames;
-const template: ITemplate | null = storageService.get("template");
-
-export const callbackSave = () => {
-  const newTemplate: ITemplate = {
-    tree: messageTemplate.tree,
-    countNode: messageTemplate.countNode,
-  };
+export const callbackSave = (messageTemplate: ITemplate | null) => {
+  const newTemplate: ITemplate | null = messageTemplate
+    ? {
+        tree: messageTemplate.tree,
+        countNode: messageTemplate.countNode,
+      }
+    : null;
   storageService.set("template", newTemplate);
 };
 
-export const messageTemplate = new MessageTemplate(template, arrVarNames);
+export const createMessageTemplate = () => {
+  const defaultVarNames = ["firstname", "lastname", "company", "position"];
+  const arrVarNames: string[] =
+    storageService.get("arrVarNames") ?? defaultVarNames;
+  const template: ITemplate | null = storageService.get("template");
+
+  return new MessageTemplate(template, arrVarNames);
+};

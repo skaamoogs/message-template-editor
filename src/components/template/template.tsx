@@ -1,11 +1,12 @@
+import { useContext } from "react";
 import { useForceUpdate } from "../../hooks/useForceUpdate";
 import {
   ITextNode,
   NodeType,
-  messageTemplate,
 } from "../../service/message-template";
 import { Textarea } from "../textarea/textarea";
 import styles from "./template.module.scss";
+import { MessageTemplateContext } from "../../app";
 
 interface ITemplateProps {
   node: ITextNode;
@@ -16,6 +17,7 @@ interface ITemplateProps {
 export const Template = (props: ITemplateProps) => {
   const { node, getActiveNode } = props;
   const forceUpdate = useForceUpdate();
+  const messageTemplate = useContext(MessageTemplateContext);
 
   const deleteBlock = (id: number) => {
     const activeNodeId = messageTemplate.deleteConditionBlock(id) ?? 0;

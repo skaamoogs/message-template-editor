@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Button, ButtonVariations } from "../button/button";
 import styles from "./template-editor.module.scss";
 import { Template } from "../template/template";
 import { useForceUpdate } from "../../hooks/useForceUpdate";
-import { callbackSave, messageTemplate } from "../../service/message-template";
+import { callbackSave } from "../../service/message-template";
 import { MessagePreview } from "../template-preview/message-preview";
+import { MessageTemplateContext } from "../../app";
 
 interface ITemplateEditorProps {
   onHide: () => void;
@@ -16,6 +17,7 @@ export const TemplateEditor = (props: ITemplateEditorProps) => {
   const [activeNodeId, setActiveNodeId] = useState<number | null>(null);
   const [showPreview, setShowPreview] = useState(false);
   const forceUpdate = useForceUpdate();
+  const messageTemplate = useContext(MessageTemplateContext);
 
   const divideBlock = () => {
     if (activeNodeId !== null) {
@@ -56,7 +58,7 @@ export const TemplateEditor = (props: ITemplateEditorProps) => {
   };
 
   const saveTemplate = () => {
-    callbackSave();
+    callbackSave(messageTemplate);
     onHide();
   };
 
