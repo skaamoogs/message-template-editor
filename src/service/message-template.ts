@@ -1,5 +1,3 @@
-import { storageService } from "./storage";
-
 export type NodeProps = {
   type: NodeType;
   id: number;
@@ -175,14 +173,19 @@ export const callbackSave = (messageTemplate: ITemplate | null) => {
         countNode: messageTemplate.countNode,
       }
     : null;
-  storageService.set("template", newTemplate);
+  localStorage.setItem("template", JSON.stringify(newTemplate));
 };
 
 export const createMessageTemplate = () => {
   const defaultVarNames = ["firstname", "lastname", "company", "position"];
-  const arrVarNames: string[] =
-    storageService.get("arrVarNames") ?? defaultVarNames;
-  const template: ITemplate | null = storageService.get("template");
+  const arrVarNames = localStorage.arrVarNames
+    ? JSON.parse(localStorage.arrVarNames)
+    : defaultVarNames;
+  const template = localStorage.template
+    ? JSON.parse(localStorage.template)
+    : null;
+
+  console.log(arrVarNames);
 
   return new MessageTemplate(template, arrVarNames);
 };

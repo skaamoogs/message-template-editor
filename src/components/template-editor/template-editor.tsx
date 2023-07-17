@@ -59,7 +59,6 @@ export const TemplateEditor = (props: ITemplateEditorProps) => {
 
   const saveTemplate = () => {
     callbackSave(messageTemplate);
-    onHide();
   };
 
   return (
