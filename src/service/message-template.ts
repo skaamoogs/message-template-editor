@@ -5,7 +5,7 @@ export type NodeProps = {
   id: number;
   text?: string;
   label?: string;
-  parent: ITextNode | null;
+  parentId: number | null;
 };
 
 export interface ITextNode extends Omit<NodeProps, "text"> {
@@ -37,7 +37,7 @@ export class MessageTemplate {
         type: NodeType.text,
         id: 0,
         text: "",
-        parent: null,
+        parentId: null,
       });
     this._countNode = template?.countNode ?? 0;
     this._varNames = varNames;
@@ -49,7 +49,7 @@ export class MessageTemplate {
       type: props.type,
       label: props.label,
       text: { value: props.text ?? "", caretPosition: 0 },
-      parent: props.parent,
+      parentId: props.parentId,
       children: null,
     };
   }
@@ -78,46 +78,49 @@ export class MessageTemplate {
           id: ++this._countNode,
           text: node.text.value.slice(0, node.text.caretPosition),
           label: node.label,
-          parent: node.parent,
+          parentId: node.parentId,
         }),
         this.createNode({
           type: NodeType.if,
           id: ++this._countNode,
           label: NodeType.if,
-          parent: node.parent,
+          parentId: node.parentId,
         }),
         this.createNode({
           type: NodeType.then,
           id: ++this._countNode,
           label: NodeType.then,
-          parent: node.parent,
+          parentId: node.parentId,
         }),
         this.createNode({
           type: NodeType.else,
           id: ++this._countNode,
           label: NodeType.else,
-          parent: node.parent,
+          parentId: node.parentId,
         }),
         this.createNode({
           type: NodeType.text,
           id: ++this._countNode,
           text: node.text.value.slice(node.text.caretPosition),
           label: node.label,
-          parent: node.parent,
+          parentId: node.parentId,
         }),
       ];
-      if (node.type === NodeType.text && node.parent?.children) {
-        const nodeIndex = node.parent.children.findIndex(
-          (child) => child.id === node.id
-        );
-        node.parent.children = [
-          ...node.parent.children.slice(0, nodeIndex),
-          ...block,
-          ...node.parent.children.slice(nodeIndex + 1),
-        ];
+      if (node.type === NodeType.text && node.parentId) {
+        const parent = this.findNode(node.parentId);
+        if (parent?.children) {
+          const nodeIndex = parent.children.findIndex(
+            (child) => child.id === node.id
+          );
+          parent.children = [
+            ...parent?.children.slice(0, nodeIndex),
+            ...block,
+            ...parent?.children.slice(nodeIndex + 1),
+          ];
+        }
       } else {
         block.forEach((el) => {
-          el.parent = node;
+          el.parentId = node.id;
         });
         node.children = block;
       }
@@ -126,12 +129,16 @@ export class MessageTemplate {
 
   deleteConditionBlock(id: number) {
     const block = this.findNode(id);
-    let children = block?.parent?.children;
-    if (children) {
-      const nodeIndex = children.findIndex((child) => child.id === block?.id);
-      children[nodeIndex - 1].text.value += children[nodeIndex + 3].text.value;
-      children.splice(nodeIndex, 4);
-      return children[nodeIndex - 1].id;
+    if (block && block.parentId) {
+      const parent = this.findNode(block.parentId);
+      let children = parent?.children;
+      if (children) {
+        const nodeIndex = children.findIndex((child) => child.id === block?.id);
+        children[nodeIndex - 1].text.value +=
+          children[nodeIndex + 3].text.value;
+        children.splice(nodeIndex, 4);
+        return children[nodeIndex - 1].id;
+      }
     }
   }
 

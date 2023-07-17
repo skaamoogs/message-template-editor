@@ -13,19 +13,23 @@ interface ITemplateEditorProps {
 export const TemplateEditor = (props: ITemplateEditorProps) => {
   const { onHide } = props;
 
-  const [activeNodeId, setActiveNodeId] = useState<number>(
-    messageTemplate.tree.id
-  );
+  const [activeNodeId, setActiveNodeId] = useState<number | null>(null);
   const [showPreview, setShowPreview] = useState(false);
   const forceUpdate = useForceUpdate();
 
   const divideBlock = () => {
-    messageTemplate.addNewNode(activeNodeId);
+    if (activeNodeId !== null) {
+      messageTemplate.addNewNode(activeNodeId);
+    }
     forceUpdate();
   };
 
   const addVariable = (varName: string) => {
-    const node = messageTemplate.findNode(activeNodeId);
+    const id =
+      activeNodeId ??
+      messageTemplate.tree?.children?.at(0)?.id ??
+      messageTemplate.tree.id;
+    const node = messageTemplate.findNode(id);
     if (node) {
       const { value, caretPosition } = node.text;
       node.text.value = `${value.slice(
@@ -49,6 +53,11 @@ export const TemplateEditor = (props: ITemplateEditorProps) => {
     setShowPreview(false);
   };
 
+  const saveTemplate = () => {
+    callbackSave();
+    onHide();
+  };
+
   return (
     <>
       <div className={styles.wrapper}>
@@ -66,12 +75,6 @@ export const TemplateEditor = (props: ITemplateEditorProps) => {
                 </Button>
               ))}
             </div>
-            <Button
-              variation={ButtonVariations.Light}
-              onClick={() => console.log(messageTemplate.tree)}
-            >
-              Show Tree
-            </Button>
             <Button variation={ButtonVariations.Light} onClick={divideBlock}>
               IF-THEN-ELSE
             </Button>
@@ -89,7 +92,9 @@ export const TemplateEditor = (props: ITemplateEditorProps) => {
             >
               Preview
             </Button>
-            <Button variation={ButtonVariations.Primary} onClick={callbackSave}>Save</Button>
+            <Button variation={ButtonVariations.Primary} onClick={saveTemplate}>
+              Save
+            </Button>
             <Button variation={ButtonVariations.Danger} onClick={onHide}>
               Close
             </Button>

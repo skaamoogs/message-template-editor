@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { messageTemplate } from "../../service/message-template";
-import { compileTemplate } from "../../utils/helpers";
+import { compileTemplate } from "../../utils/compile-template";
 import styles from "./message-preview.module.scss";
 import { Input } from "../input/input";
 import { Button, ButtonVariations } from "../button/button";
@@ -19,7 +19,6 @@ export const MessagePreview = (props: IMessagePreviewProps) => {
   }, [variables]);
 
   const changeVariables = (name: string, value: string) => {
-    console.log(name, value);
     setVariables((prevState) => ({ ...prevState, [name]: value }));
   };
 
@@ -35,6 +34,7 @@ export const MessagePreview = (props: IMessagePreviewProps) => {
           <h2 className={styles.variablesTitle}>Variables: </h2>
           {messageTemplate.varNames.map((name) => (
             <Input
+              key={name}
               id={name}
               label={name}
               placeholder={name}
