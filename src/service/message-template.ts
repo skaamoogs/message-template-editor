@@ -110,7 +110,7 @@ export class MessageTemplate {
       ];
 
       /* If node type is text (not condition block) it adds new condition block to node siblings array */
-      if (node.type === NodeType.text && node.parentId) {
+      if (node.type === NodeType.text && node.parentId !== null) {
         const parent = this.findNode(node.parentId);
         if (parent?.children) {
           const nodeIndex = parent.children.findIndex(
@@ -184,8 +184,6 @@ export const createMessageTemplate = () => {
   const template = localStorage.template
     ? JSON.parse(localStorage.template)
     : null;
-
-  console.log(arrVarNames);
 
   return new MessageTemplate(template, arrVarNames);
 };
