@@ -55,7 +55,7 @@ export const Textarea = (props: ITextareaProps) => {
         value={value}
         ref={textareaRef}
         onChange={onChange}
-        onKeyDown={moveCaret}
+        onKeyUp={moveCaret}
         onClick={moveCaret}
         onFocus={focusHandler}
       />
